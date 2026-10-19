@@ -1,8 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
+import emailRoutes from './routes/email.routes.js';
+import smtpRoutes from './routes/smtp.routes.js';
+import templateRoutes from './routes/template.routes.js';
 import { ResponseFactory } from './utils/responseFactory.js';
-import { AppError } from './utils/errorFactory.js';
+import { notFoundHandler, errorHandler } from './middlewares/error.middleware.js';
 
 const app = express();
 
@@ -18,38 +21,12 @@ app.get('/api/health', (req, res) => {
 
 // Mount Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/emails', emailRoutes);
+app.use('/api/admin/smtp', smtpRoutes);
+app.use('/api/templates', templateRoutes);
 
-// 404 Handler
-app.use((req, res) => {
-    ResponseFactory.error(
-        res,
-        `Route not found: ${req.method} ${req.originalUrl}`,
-        404,
-        null,
-        'NOT_FOUND'
-    );
-});
-
-// Centralized Global Error Handler (Express 5 natively forwards async errors here)
-app.use((err, req, res, next) => {
-    if (err instanceof AppError) {
-        return ResponseFactory.error(
-            res,
-            err.message,
-            err.statusCode,
-            err.errors,
-            err.errorCode
-        );
-    }
-
-    console.error('Unhandled server error:', err);
-    return ResponseFactory.error(
-        res,
-        err.message || 'Internal Server Error',
-        err.status || err.statusCode || 500,
-        null,
-        'INTERNAL_SERVER_ERROR'
-    );
-});
+// 404 Handler & Global Error Handler Middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
