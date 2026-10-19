@@ -1,9 +1,5 @@
 import { ResponseFactory } from '../utils/responseFactory.js';
 
-/**
- * Express middleware to validate request body against a Zod schema.
- * @param {import('zod').ZodType} schema - Zod schema (ZodType replaces deprecated ZodSchema)
- */
 export function validate(schema) {
     return (req, res, next) => {
         const result = schema.safeParse(req.body);
