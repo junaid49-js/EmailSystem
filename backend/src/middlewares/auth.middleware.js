@@ -2,9 +2,6 @@ import { verifyToken } from '../utils/jwt.js';
 import { ErrorFactory } from '../utils/errorFactory.js';
 import { AuthService } from '../services/auth.service.js';
 
-/**
- * Middleware to authenticate requests using JWT Bearer token.
- */
 export async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.startsWith('Bearer ')
@@ -33,10 +30,6 @@ export async function authenticateToken(req, res, next) {
     next();
 }
 
-/**
- * Optional authentication middleware: attaches req.admin if valid token is provided,
- * otherwise proceeds without error.
- */
 export async function optionalAuth(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.startsWith('Bearer ')
@@ -59,10 +52,6 @@ export async function optionalAuth(req, res, next) {
     next();
 }
 
-/**
- * Middleware to restrict access by role.
- * @param  {...string} roles 
- */
 export function requireRole(...roles) {
     return (req, res, next) => {
         if (!req.admin) {
